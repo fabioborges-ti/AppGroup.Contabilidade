@@ -1,0 +1,36 @@
+﻿using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
+using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
+using MediatR;
+
+namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
+
+public class CriarContaContabilUseCase : IRequestHandler<CriarContaContabilRequest, CriarContaContabilResponse>
+{
+    private readonly IContaContabilRepository _repository;
+
+    public CriarContaContabilUseCase(IContaContabilRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<CriarContaContabilResponse> Handle(CriarContaContabilRequest request, CancellationToken cancellationToken)
+    {
+        var h1 = new ChecaExistenciaCodigoHandler(_repository);
+        var h2 = new ChecaNivelCodigoHandler();
+        var h3 = new ChecaContaPaiHandler(_repository);
+        var h4 = new GravaDadosContaHandler(_repository);
+
+        h1.SetSuccessor(h2);
+        h2.SetSuccessor(h3);
+        h3.SetSuccessor(h4);
+
+        await h1.Process(request);
+
+        return new CriarContaContabilResponse
+        {
+            Data = request.HasError
+                    ? request.ErrorMessage
+                    : request.Codigo
+        };
+    }
+}

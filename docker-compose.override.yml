@@ -1,0 +1,74 @@
+services:
+  appgroup.contabilidade.webapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080"
+      - "8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - network
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "#Br@sil10"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      TZ: "America/Sao_Paulo"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    platform: linux/amd64  
+    restart: unless-stopped
+    networks:
+      - network
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - network
+
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - network
+
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL="http://localhost:9200"
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    networks:
+      - network
+
+networks:
+  network:
+    name: network
