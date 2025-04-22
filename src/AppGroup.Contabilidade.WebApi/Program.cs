@@ -17,17 +17,6 @@ try
 
     var app = builder.Build();
 
-    #region MIGRATIONS
-
-    //using (var scope = app.Services.CreateScope())
-    //{
-    //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    //    db.Database.Migrate();
-    //}
-
-    #endregion
-
     app.UseSerilogRequestLogging();
 
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

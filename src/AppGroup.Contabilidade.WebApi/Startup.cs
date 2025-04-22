@@ -91,20 +91,12 @@ public class Startup
 
         app.UseRequestLogging();
         app.UseRequestErrors();
-
         app.UseExceptionHandler("/error");
 
         app.UseHsts();
 
-        app.UseHealthChecks("/health", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-        });
-
         app.UseHttpsRedirection();
         app.UseRouting();
-
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -113,6 +105,21 @@ public class Startup
           .AllowAnyMethod()
           .SetIsOriginAllowed(origin => true)
           .AllowCredentials());
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            endpoints.MapHealthChecksUI(options =>
+            {
+                options.UIPath = "/dashboard"; // URL do dashboard
+                options.ApiPath = "/health-ui-api"; // endpoint da API do UI
+            });
+        });
 
         app.UseEndpoints(endpoints => endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}"));
     }

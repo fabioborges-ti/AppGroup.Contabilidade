@@ -12,9 +12,19 @@ public static class HealthCheckExtensions
             .AddSqlServer(
                 connectionString: configuration.GetConnectionString("DefaultConnection")!,
                 name: "SqlServer",
+                healthQuery: "SELECT 1",
                 failureStatus: HealthStatus.Degraded,
                 tags: ["db", "sql", "sqlserver"]
             );
+
+        services
+            .AddHealthChecksUI(options =>
+            {
+                options.SetEvaluationTimeInSeconds(15); // tempo entre verificações
+                options.MaximumHistoryEntriesPerEndpoint(60);
+                options.AddHealthCheckEndpoint("Contabilidade API", "/health");
+            })
+            .AddInMemoryStorage();
 
         return services;
     }
