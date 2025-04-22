@@ -35,7 +35,7 @@ O ambiente de execução inclui os seguintes recursos:
 - **ElasticSearch**: Motor de busca e análise distribuído
 - **Kibana**: Interface de usuário para visualização de dados do ElasticSearch
 - **Portainer**: Interface web para gerenciamento de containers Docker
-- **HealthCheck**: Mecanismo de monitorização da saúde da aplicação e dos serviços dependentes. Permite acompanhar em tempo real o estado da API e do SQL Server, facilitando a identificação de falhas ou degradações no sistema.
+- **HealthCheck**: Mecanismo de monitorização da saúde da aplicação e dos serviços dependentes. 
 
 ### 📋 Pré-requisitos
 
