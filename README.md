@@ -35,6 +35,7 @@ O ambiente de execução inclui os seguintes recursos:
 - **ElasticSearch**: Motor de busca e análise distribuído
 - **Kibana**: Interface de usuário para visualização de dados do ElasticSearch
 - **Portainer**: Interface web para gerenciamento de containers Docker
+- **HealthCheck**: Mecanismo de monitorização da saúde da aplicação e dos serviços dependentes. 
 
 ### 📋 Pré-requisitos
 
@@ -79,14 +80,22 @@ Atente para os seguintes containers:
 - **MediatR**
 - **Dapper**
 - **Entity Framework** (somente para migrations)
+- **SQL Server**
+- **Clean Architecture** e **Clean Code**
+- **Design Pattern** (Chain of Responsability)
+- **HealthChecks**
+- **Serilog**
+- **ElasticSearch**
+- **Kibana**
+- **Versionamento de APIs**
 - **xUnit** (para testes unitários)
-- **PostgreSQL** ou **SQL Server**
-- **Clean Architecture**
 
 ### 🔗 Padrão Chain of Responsibility
 
 ### Conceito
 O **Chain of Responsibility** é um padrão comportamental que permite passar solicitações ao longo de uma cadeia de handlers. Cada handler decide se processa a solicitação ou a passa para o próximo handler na cadeia.
+
+![Chain of Responsability](./chain-of-responsibility.png)
 
 ### Implementação no Projeto
 
