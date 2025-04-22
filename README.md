@@ -79,9 +79,15 @@ Atente para os seguintes containers:
 - **MediatR**
 - **Dapper**
 - **Entity Framework** (somente para migrations)
+- **SQL Server**
+- **Clean Architecture** e **Clean Code**
+- **Design Pattern** (Chain of Responsability)
+- **HealthChecks**
+- **Serilog**
+- **ElasticSearch**
+- **Kibana**
+- **Versionamento de APIs**
 - **xUnit** (para testes unitários)
-- **PostgreSQL** ou **SQL Server**
-- **Clean Architecture**
 
 ### 🔗 Padrão Chain of Responsibility
 
