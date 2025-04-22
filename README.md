@@ -94,6 +94,8 @@ Atente para os seguintes containers:
 ### Conceito
 O **Chain of Responsibility** é um padrão comportamental que permite passar solicitações ao longo de uma cadeia de handlers. Cada handler decide se processa a solicitação ou a passa para o próximo handler na cadeia.
 
+![Chain of Responsability](./chain-of-responsibility.png)
+
 ### Implementação no Projeto
 
 A aplicação utiliza o padrão Chain of Responsibility para processar as requisições de criação, edição e sugestão de contas contábeis. Cada handler na cadeia é responsável por uma validação ou processamento específico.
