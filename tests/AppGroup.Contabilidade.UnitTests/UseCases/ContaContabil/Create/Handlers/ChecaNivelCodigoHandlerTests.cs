@@ -3,6 +3,8 @@ using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
 using Moq;
 
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Create.Handlers;
+
 public class ChecaNivelCodigoHandlerTests
 {
     private readonly ChecaNivelCodigoHandler _handler;

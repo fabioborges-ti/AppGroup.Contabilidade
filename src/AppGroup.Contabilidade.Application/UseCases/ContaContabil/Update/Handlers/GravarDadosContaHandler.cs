@@ -1,5 +1,4 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
-using AppGroup.Contabilidade.Domain.Enums;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using AppGroup.Contabilidade.Domain.Models.ContaContabil;
 
@@ -25,7 +24,7 @@ public class GravarDadosContaHandler : Handler<EditarContaContabilRequest>
                 Id = request.Id,
                 Codigo = request.Codigo,
                 Nome = request.Nome,
-                Tipo = request.Tipo == TipoConta.Receitas ? 1 : 2,
+                Tipo = (int)request.Tipo,
                 AceitaLancamentos = request.AceitaLancementos ? 1 : 0
             };
 
@@ -36,5 +35,8 @@ public class GravarDadosContaHandler : Handler<EditarContaContabilRequest>
             request.HasError = true;
             request.ErrorMessage = ex.Message;
         }
+
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 }

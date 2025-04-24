@@ -14,7 +14,7 @@ namespace AppGroup.Contabilidade.WebApi.Controllers.V1;
 public class ContaContabilController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<CriarContaContabilResponse>> Post(CriarContaContabilRequest request)
+    public async Task<ActionResult<CriarContaContabilResponse>> Post([FromBody] CriarContaContabilRequest request)
     {
         var result = await Mediator.Send(request);
 

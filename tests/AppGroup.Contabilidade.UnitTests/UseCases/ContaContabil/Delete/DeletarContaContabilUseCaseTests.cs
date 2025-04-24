@@ -3,7 +3,7 @@ using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using AppGroup.Contabilidade.Domain.Models.ContaContabil;
 using Moq;
 
-namespace AppGroup.Contabilidade.Application.Tests.UseCases.ContaContabil.Delete;
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Delete;
 
 public class DeletarContaContabilUseCaseTests
 {

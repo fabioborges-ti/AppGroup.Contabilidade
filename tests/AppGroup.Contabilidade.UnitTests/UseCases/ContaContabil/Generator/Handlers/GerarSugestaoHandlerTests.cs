@@ -3,134 +3,269 @@ using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Generator.Handle
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using Moq;
 
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Generator.Handlers;
+
 public class GerarSugestaoHandlerTests
 {
     private readonly Mock<IContaContabilRepository> _repositoryMock;
     private readonly GerarSugestaoHandler _handler;
+    private readonly CriarSugestaoRequest _request;
 
     public GerarSugestaoHandlerTests()
     {
         _repositoryMock = new Mock<IContaContabilRepository>();
         _handler = new GerarSugestaoHandler(_repositoryMock.Object);
+        _request = new CriarSugestaoRequest();
     }
 
     [Fact]
-    public async Task Process_DeveGerarCodigoPai_QuandoIdPaiForNulo()
+    public async Task Process_WhenIdPaiIsNull_ShouldGenerateParentCode()
     {
         // Arrange
-        var request = new CriarSugestaoRequest { IdPai = null };
-        _repositoryMock.Setup(r => r.GerarCodigoPai()).ReturnsAsync(10);
+        _request.IdPai = null;
+        _repositoryMock.Setup(r => r.GerarCodigoPai()).ReturnsAsync(1);
 
         // Act
-        await _handler.Process(request);
+        await _handler.Process(_request);
 
         // Assert
-        Assert.Equal("10", request.Codigo);
-        Assert.False(request.HasError);
-        Assert.Empty(request.ErrorMessage);
+        Assert.Equal("1", _request.Codigo);
+        Assert.False(_request.HasError);
+        Assert.Empty(_request.ErrorMessage);
+
+        _repositoryMock.Verify(r => r.GerarCodigoPai(), Times.Once);
     }
 
     [Fact]
-    public async Task Process_DeveGerarCodigoFilho_QuandoIdPaiNaoForNulo_EPrimeiroFilho()
+    public async Task Process_WithValidIdPai_ShouldGenerateChildCode()
     {
         // Arrange
-        var idPai = Guid.NewGuid();
-        var request = new CriarSugestaoRequest { IdPai = idPai };
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai)).ReturnsAsync(("1", false));
-        _repositoryMock.Setup(r => r.PesquisarFilhosPorId(idPai)).ReturnsAsync(new List<(string, bool)>());
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
+
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1", false)); // Parent code, doesn't accept entries
+
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync(
+            [
+                    ("1.1", true),
+                    ("1.2", true)
+            ]);
 
         // Act
-        await _handler.Process(request);
+        await _handler.Process(_request);
 
         // Assert
-        Assert.Equal("1.1", request.Codigo);
-        Assert.False(request.HasError);
+        Assert.Equal("1.3", _request.Codigo);
+        Assert.False(_request.HasError);
+        Assert.Empty(_request.ErrorMessage);
+
+        _repositoryMock.Verify(r => r.PesquisarPaiPorId(parentId), Times.Once);
+        _repositoryMock.Verify(r => r.PesquisarFilhosPorId(parentId), Times.Once);
     }
 
     [Fact]
-    public async Task Process_DeveGerarCodigoFilhoComNivel2()
+    public async Task Process_WithNoExistingChildren_ShouldGenerateFirstChildCode()
     {
-        var idPai = Guid.NewGuid();
-        var filhos = new List<(string, bool)>
+        // Arrange
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
+
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1", false)); // Parent code, doesn't accept entries
+
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync([]);
+
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.Equal("1.1", _request.Codigo);
+        Assert.False(_request.HasError);
+        Assert.Empty(_request.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Process_WithNonexistentParentId_ShouldSetErrorMessage()
+    {
+        // Arrange
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
+
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("", false)); // Empty parent code indicates not found
+
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.True(_request.HasError);
+        Assert.Equal("Código-pai não encontrado", _request.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Process_WithParentThatAcceptsEntries_ShouldSetErrorMessage()
+    {
+        // Arrange
+        var parentId = Guid.NewGuid();
+
+        _request.IdPai = parentId;
+
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1", true)); // Parent code that accepts entries
+
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.True(_request.HasError);
+        Assert.Equal("Código-pai não permite criação de filhos", _request.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Process_WithLevel3CodeReachingLimit_ShouldFindNextAvailableParentCode()
+    {
+        // Arrange
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
+
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1.2", false));
+
+        var childCodes = new List<(string, bool)>();
+
+        for (int i = 1; i < 1000; i++)
         {
-            ("1.1", true),
-            ("1.2", true)
-        };
+            childCodes.Add(($"1.2.{i}", true));
+        }
 
-        var request = new CriarSugestaoRequest { IdPai = idPai };
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai)).ReturnsAsync(("1", false));
-        _repositoryMock.Setup(r => r.PesquisarFilhosPorId(idPai)).ReturnsAsync(filhos);
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync(childCodes);
 
-        await _handler.Process(request);
+        _repositoryMock
+            .Setup(r => r.ExisteCodigo("1.3"))
+            .ReturnsAsync(true);
 
-        Assert.Equal("1.3", request.Codigo);
+        _repositoryMock
+            .Setup(r => r.ExisteCodigo("1.4"))
+            .ReturnsAsync(false);
+
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.Equal("1.4", _request.Codigo);
+        Assert.False(_request.HasError);
+
+        _repositoryMock.Verify(r => r.ExisteCodigo("1.3"), Times.Once);
+        _repositoryMock.Verify(r => r.ExisteCodigo("1.4"), Times.Once);
     }
 
     [Fact]
-    public async Task Process_DeveGerarCodigoFilhoComNivel3()
+    public async Task Process_WithGenericException_ShouldHandleError()
     {
-        var idPai = Guid.NewGuid();
-        var filhos = new List<(string, bool)>
-        {
-            ("1.1.998", true),
-            ("1.1.999", true)
-        };
+        // Arrange
+        _request.IdPai = null;
+        _repositoryMock.Setup(r => r.GerarCodigoPai())
+            .ThrowsAsync(new Exception("Database connection error"));
 
-        var request = new CriarSugestaoRequest { IdPai = idPai };
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai)).ReturnsAsync(("1.1", false));
-        _repositoryMock.Setup(r => r.PesquisarFilhosPorId(idPai)).ReturnsAsync(filhos);
-        _repositoryMock.Setup(r => r.ExisteCodigo("1.2")).ReturnsAsync(false);
+        // Act
+        await _handler.Process(_request);
 
-        await _handler.Process(request);
-
-        Assert.Equal("1.2", request.Codigo);
+        // Assert
+        Assert.True(_request.HasError);
+        Assert.Equal("Database connection error", _request.ErrorMessage);
     }
 
     [Fact]
-    public async Task Process_DeveRetornarProximoCodigoPaiQuandoNivel3AtingeLimite()
+    public async Task Process_WithChildCodesAtLevel2_ShouldGenerateCorrectNextCode()
     {
-        var idPai = Guid.NewGuid();
-        var filhos = new List<(string, bool)>
-        {
-            ("1.999.999", true)
-        };
+        // Arrange
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
 
-        var request = new CriarSugestaoRequest { IdPai = idPai };
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1", false));
 
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai)).ReturnsAsync(("1.999", false));
-        _repositoryMock.Setup(r => r.PesquisarFilhosPorId(idPai)).ReturnsAsync(filhos);
-        _repositoryMock.Setup(r => r.ExisteCodigo("1.1000")).ReturnsAsync(false);
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync(
+            [
+                ("1.5", true),
+                ("1.7", true)
+            ]);
 
-        await _handler.Process(request);
+        // Act
+        await _handler.Process(_request);
 
-        Assert.Equal("1.1000", request.Codigo);
+        // Assert
+        Assert.Equal("1.8", _request.Codigo);
     }
 
     [Fact]
-    public async Task Process_DeveSetarErro_QuandoCodigoPaiNaoForEncontrado()
+    public async Task Process_WithChildCodesAtLevel3_ShouldGenerateCorrectNextCode()
     {
-        var idPai = Guid.NewGuid();
-        var request = new CriarSugestaoRequest { IdPai = idPai };
+        // Arrange
+        var parentId = Guid.NewGuid();
+        _request.IdPai = parentId;
 
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai))!.ReturnsAsync((null, false));
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1.2", false));
 
-        await _handler.Process(request);
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync(
+            [
+                ("1.2.5", true),
+                ("1.2.8", true)
+            ]);
 
-        Assert.True(request.HasError);
-        Assert.Equal("Código-pai não encontrado", request.ErrorMessage);
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.Equal("1.2.9", _request.Codigo);
     }
 
     [Fact]
-    public async Task Process_DeveSetarErro_QuandoCodigoPaiNaoPermiteFilhos()
+    public async Task Process_WithMixedLevelChildCodes_ShouldConsiderOnlyCorrectLevel()
     {
-        var idPai = Guid.NewGuid();
-        var request = new CriarSugestaoRequest { IdPai = idPai };
+        // Arrange
+        var parentId = Guid.NewGuid();
 
-        _repositoryMock.Setup(r => r.PesquisarPaiPorId(idPai)).ReturnsAsync(("1", true));
+        _request.IdPai = parentId;
 
-        await _handler.Process(request);
+        _repositoryMock
+            .Setup(r => r.PesquisarPaiPorId(parentId))
+            .ReturnsAsync(("1.2", false));
 
-        Assert.True(request.HasError);
-        Assert.Equal("Código-pai não permite criação de filhos", request.ErrorMessage);
+        // Mix of level 2 and level 3 codes
+        _repositoryMock
+            .Setup(r => r.PesquisarFilhosPorId(parentId))
+            .ReturnsAsync(
+            [
+                ("1.2.1", true),
+                ("1.2.2", true),
+                ("1.2.3", true),
+                ("1.2.4", true),
+            ]);
+
+        // Act
+        await _handler.Process(_request);
+
+        // Assert
+        Assert.Equal("1.2.5", _request.Codigo);
     }
 }

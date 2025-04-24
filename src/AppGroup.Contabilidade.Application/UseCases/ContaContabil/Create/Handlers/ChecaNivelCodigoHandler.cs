@@ -1,9 +1,19 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
+using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
 
 public class ChecaNivelCodigoHandler : Handler<CriarContaContabilRequest>
 {
+    private readonly ILogger _logger;
+
+    public ChecaNivelCodigoHandler()
+    {
+        _logger = LoggerFactory
+                   .Create(builder => builder.AddConsole())
+                   .CreateLogger<ChecaExistenciaCodigoHandler>();
+    }
+
     public override async Task Process(CriarContaContabilRequest request)
     {
         if (request.HasError) return;
@@ -31,6 +41,7 @@ public class ChecaNivelCodigoHandler : Handler<CriarContaContabilRequest>
             request.ErrorMessage = ex.Message;
         }
 
-        await _successor!.Process(request);
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 }

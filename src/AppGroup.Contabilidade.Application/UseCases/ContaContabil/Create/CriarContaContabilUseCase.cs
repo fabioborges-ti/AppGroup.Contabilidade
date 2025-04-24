@@ -1,20 +1,25 @@
 ﻿using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
 
 public class CriarContaContabilUseCase : IRequestHandler<CriarContaContabilRequest, CriarContaContabilResponse>
 {
+    private readonly ILogger<CriarContaContabilUseCase> _logger;
     private readonly IContaContabilRepository _repository;
 
-    public CriarContaContabilUseCase(IContaContabilRepository repository)
+    public CriarContaContabilUseCase(ILogger<CriarContaContabilUseCase> logger, IContaContabilRepository repository)
     {
+        _logger = logger;
         _repository = repository;
     }
 
     public async Task<CriarContaContabilResponse> Handle(CriarContaContabilRequest request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Iniciando o cadastro de conta contábil.");
+
         var h1 = new ChecaExistenciaCodigoHandler(_repository);
         var h2 = new ChecaNivelCodigoHandler();
         var h3 = new ChecaContaPaiHandler(_repository);

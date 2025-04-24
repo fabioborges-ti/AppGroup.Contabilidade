@@ -1,5 +1,3 @@
-#nullable disable
-
 using AppGroup.Contabilidade.Logging;
 using AppGroup.Contabilidade.WebApi;
 using Asp.Versioning.ApiExplorer;

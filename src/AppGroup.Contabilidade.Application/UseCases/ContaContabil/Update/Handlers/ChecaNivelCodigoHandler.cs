@@ -30,6 +30,7 @@ public class ChecaNivelCodigoHandler : Handler<EditarContaContabilRequest>
             request.ErrorMessage = ex.Message;
         }
 
-        await _successor!.Process(request);
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 }

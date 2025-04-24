@@ -2,17 +2,22 @@
 using AppGroup.Contabilidade.Domain.Enums;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using AppGroup.Contabilidade.Domain.Models.ContaContabil;
+using Microsoft.Extensions.Logging;
 using Moq;
+
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Create;
 
 public class CriarContaContabilUseCaseTests
 {
     private readonly Mock<IContaContabilRepository> _repositoryMock;
+    private readonly Mock<ILogger<CriarContaContabilUseCase>> _loggerMock;
     private readonly CriarContaContabilUseCase _useCase;
 
     public CriarContaContabilUseCaseTests()
     {
+        _loggerMock = new Mock<ILogger<CriarContaContabilUseCase>>();
         _repositoryMock = new Mock<IContaContabilRepository>();
-        _useCase = new CriarContaContabilUseCase(_repositoryMock.Object);
+        _useCase = new CriarContaContabilUseCase(_loggerMock.Object, _repositoryMock.Object);
     }
 
     [Fact]
@@ -27,8 +32,13 @@ public class CriarContaContabilUseCaseTests
             AceitaLancamentos = false
         };
 
-        _repositoryMock.Setup(r => r.ExisteCodigo("1")).ReturnsAsync(false);
-        _repositoryMock.Setup(r => r.CriarContaContabil(It.IsAny<CriarContaContabilModel>())).Returns(Task.CompletedTask);
+        _repositoryMock
+            .Setup(r => r.ExisteCodigo("1"))
+            .ReturnsAsync(false);
+
+        _repositoryMock
+            .Setup(r => r.CriarContaContabil(It.IsAny<CriarContaContabilModel>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         var response = await _useCase.Handle(request, default);
@@ -50,7 +60,9 @@ public class CriarContaContabilUseCaseTests
             AceitaLancamentos = false
         };
 
-        _repositoryMock.Setup(r => r.ExisteCodigo("1")).ReturnsAsync(true);
+        _repositoryMock
+            .Setup(r => r.ExisteCodigo("1"))
+            .ReturnsAsync(true);
 
         // Act
         var response = await _useCase.Handle(request, default);

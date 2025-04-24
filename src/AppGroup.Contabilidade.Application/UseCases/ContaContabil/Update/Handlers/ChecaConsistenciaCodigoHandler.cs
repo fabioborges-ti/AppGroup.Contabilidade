@@ -34,7 +34,8 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             request.ErrorMessage = ex.Message;
         }
 
-        await _successor!.Process(request);
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 
     private async Task VerificarNivel1e2(EditarContaContabilRequest request)
@@ -53,5 +54,8 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             if (request.Tipo != contaPai.Tipo)
                 throw new ArgumentException("Tipo não pode ser alterado porque está diferente da Conta-pai");
         }
+
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 }

@@ -4,6 +4,8 @@ using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using Moq;
 
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Create.Handlers;
+
 public class ChecaExistenciaCodigoHandlerTests
 {
     private readonly Mock<IContaContabilRepository> _repositoryMock;

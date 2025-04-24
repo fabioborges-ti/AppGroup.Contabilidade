@@ -1,5 +1,6 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
 
@@ -7,13 +8,21 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
 {
     private readonly IContaContabilRepository _repository;
 
+    private readonly ILogger _logger;
+
     public ChecaContaPaiHandler(IContaContabilRepository repository)
     {
         _repository = repository;
+
+        _logger = LoggerFactory
+                    .Create(builder => builder.AddConsole())
+                    .CreateLogger<ChecaContaPaiHandler>();
     }
 
     public override async Task Process(CriarContaContabilRequest request)
     {
+        _logger.LogInformation("Iniciando a validação de conta-pai.");
+
         if (request.HasError) return;
 
         try
@@ -52,8 +61,11 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
         {
             request.HasError = true;
             request.ErrorMessage = ex.Message;
+
+            _logger.LogError(ex, "Erro ao validar a conta-pai: {Codigo}", request.Codigo);
         }
 
-        await _successor!.Process(request);
+        if (_successor is not null)
+            await _successor!.Process(request);
     }
 }

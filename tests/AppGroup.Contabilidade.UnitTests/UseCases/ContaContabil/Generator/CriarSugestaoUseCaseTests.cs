@@ -2,6 +2,8 @@
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using Moq;
 
+namespace AppGroup.Contabilidade.UnitTests.UseCases.ContaContabil.Generator;
+
 public class CriarSugestaoUseCaseTests
 {
     private readonly Mock<IContaContabilRepository> _repositoryMock;
