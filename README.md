@@ -174,7 +174,8 @@ O padrão é utilizado nos três fluxos principais do sistema:
 
 1. **Criação de Conta Contábil**: Validações sequenciais de código, nível, conta-pai e persistência.
 2. **Edição de Conta Contábil**: Validações sequenciais de nível, existência, consistência e atualização.
-3. **Geração de Sugestão**: Embora use apenas um handler, mantém a mesma estrutura para consistência.
+3. **Exclusão de Conta Contábil**: Validações sequenciais para verificar existência da conta e ausência de contas filhas antes da exclusão definitiva.
+4. **Geração de Sugestão**: Embora use apenas um handler, mantém a mesma estrutura para consistência.
 
 ### 🔁 Fluxo de Criação de Conta Contábil
 
