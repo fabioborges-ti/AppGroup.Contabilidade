@@ -20,15 +20,6 @@ public static class ServiceCollectionExtensions
 
         #endregion Repositories
 
-        #region Migrations
-
-        using var serviceScope = services.BuildServiceProvider().CreateScope();
-        using var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        context.Database.Migrate();
-
-        #endregion
-
         return services;
     }
 }

@@ -34,7 +34,8 @@ public class ChecaExistenciaCodigoHandlerTests
         // Assert
         Assert.True(request.HasError);
         Assert.Equal("Código já cadastrado", request.ErrorMessage);
-        _successorMock.Verify(s => s.Process(It.IsAny<CriarContaContabilRequest>()), Times.Once);
+
+        _successorMock.Verify(s => s.Process(It.IsAny<CriarContaContabilRequest>()), Times.Never);
     }
 
     [Fact]
@@ -58,14 +59,18 @@ public class ChecaExistenciaCodigoHandlerTests
     {
         // Arrange
         var request = new CriarContaContabilRequest { Codigo = "erro" };
-        _repositoryMock.Setup(r => r.ExisteCodigo("erro")).ThrowsAsync(new Exception("Falha ao acessar repositório"));
+
+        _repositoryMock
+            .Setup(r => r.ExisteCodigo("erro"))
+            .ThrowsAsync(new Exception("Falha ao acessar repositório"));
 
         // Act
         await _handler.Process(request);
 
         // Assert
         Assert.True(request.HasError);
-        Assert.Equal("Falha ao acessar repositório", request.ErrorMessage);
-        _successorMock.Verify(s => s.Process(It.IsAny<CriarContaContabilRequest>()), Times.Once);
+        Assert.Equal("Erro ao validar a existência do código", request.ErrorMessage);
+
+        _successorMock.Verify(s => s.Process(It.IsAny<CriarContaContabilRequest>()), Times.Never);
     }
 }

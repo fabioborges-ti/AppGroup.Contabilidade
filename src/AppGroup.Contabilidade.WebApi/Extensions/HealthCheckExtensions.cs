@@ -22,7 +22,8 @@ public static class HealthCheckExtensions
             {
                 options.SetEvaluationTimeInSeconds(15); // tempo entre verificações
                 options.MaximumHistoryEntriesPerEndpoint(60);
-                options.AddHealthCheckEndpoint("Contabilidade API", "/health");
+                options.SetHeaderText("Contabilidade API - Health Checks");
+                options.AddHealthCheckEndpoint("API", "/health");
             })
             .AddInMemoryStorage();
 

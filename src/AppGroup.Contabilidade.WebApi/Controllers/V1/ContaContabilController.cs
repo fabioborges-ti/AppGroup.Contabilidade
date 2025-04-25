@@ -1,5 +1,4 @@
-﻿using AppGroup.Contabilidade.Application.Common.Exceptions;
-using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
+﻿using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Delete;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Generator;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Get;
@@ -23,16 +22,11 @@ public class ContaContabilController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CriarContaContabilResponse>> Post([FromBody] CriarContaContabilRequest request)
     {
-        try
-        {
-            var result = await _mediator.Send(request);
+        var result = await _mediator.Send(request);
 
-            return CreatedAtAction(nameof(Post), result.Data);
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Errors);
-        }
+        return request.HasError
+                ? BadRequest(result.Data)
+                : CreatedAtAction(nameof(Post), result.Data);
     }
 
     [HttpGet("GerarSugestaoConta")]
@@ -72,16 +66,11 @@ public class ContaContabilController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<EditarContaContabilResponse>> Editar([FromBody] EditarContaContabilRequest request)
     {
-        try
-        {
-            var result = await _mediator.Send(request);
+        var result = await _mediator.Send(request);
 
-            return Ok(result.Data);
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Errors);
-        }
+        return request.HasError
+                ? BadRequest(result.Data)
+                : Ok(result.Data);
     }
 
     [HttpDelete]

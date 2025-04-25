@@ -58,20 +58,4 @@ public class ChecaExistenciaCodigoHandlerTests
         Assert.False(request.HasError);
         Assert.Empty(request.ErrorMessage);
     }
-
-    [Fact]
-    public async Task NaoDeveExecutar_SeRequestJaTemErro()
-    {
-        // Arrange
-        var request = new EditarContaContabilRequest
-        {
-            HasError = true
-        };
-
-        // Act
-        await _handler.Process(request);
-
-        // Assert
-        _repositoryMock.Verify(r => r.BuscarContaPorId(It.IsAny<Guid>()), Times.Never);
-    }
 }

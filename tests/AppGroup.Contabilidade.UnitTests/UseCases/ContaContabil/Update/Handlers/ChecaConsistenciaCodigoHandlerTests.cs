@@ -49,7 +49,7 @@ public class ChecaConsistenciaCodigoHandlerTests
         Assert.True(request.HasError);
         Assert.Equal("Tipo não pode ser alterado, porque há registros filhos cadastrados na base", request.ErrorMessage);
 
-        _successorMock.Verify(s => s.Process(It.IsAny<EditarContaContabilRequest>()), Times.Once);
+        _successorMock.Verify(s => s.Process(It.IsAny<EditarContaContabilRequest>()), Times.Never);
     }
 
     [Fact]

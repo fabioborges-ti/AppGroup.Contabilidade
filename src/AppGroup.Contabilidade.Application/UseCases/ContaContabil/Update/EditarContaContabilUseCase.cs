@@ -1,6 +1,7 @@
 ﻿using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Update.Handlers;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Update;
 
@@ -8,13 +9,21 @@ public class EditarContaContabilUseCase : IRequestHandler<EditarContaContabilReq
 {
     private readonly IContaContabilRepository _repository;
 
+    private readonly ILogger _logger;
+
     public EditarContaContabilUseCase(IContaContabilRepository repository)
     {
         _repository = repository;
+
+        _logger = LoggerFactory
+                .Create(builder => builder.AddConsole())
+                .CreateLogger<EditarContaContabilUseCase>();
     }
 
     public async Task<EditarContaContabilResponse> Handle(EditarContaContabilRequest request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Iniciando o processamento da edição da conta contábil.");
+
         var h1 = new ChecaNivelCodigoHandler();
         var h2 = new ChecaExistenciaCodigoHandler(_repository);
         var h3 = new ChecaConsistenciaCodigoHandler(_repository);

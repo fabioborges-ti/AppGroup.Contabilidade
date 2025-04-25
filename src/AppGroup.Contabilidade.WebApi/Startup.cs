@@ -118,6 +118,7 @@ public class Startup
             {
                 options.UIPath = "/dashboard"; // URL do dashboard
                 options.ApiPath = "/health-ui-api"; // endpoint da API do UI
+
             });
         });
 

@@ -48,23 +48,6 @@ public class GravaDadosContaHandlerTests
     }
 
     [Fact]
-    public async Task Process_NaoDeveGravarConta_QuandoRequestComErro()
-    {
-        // Arrange
-        var request = new CriarContaContabilRequest
-        {
-            HasError = true,
-            Codigo = "1.1"
-        };
-
-        // Act
-        await _handler.Process(request);
-
-        // Assert
-        _repositoryMock.Verify(repo => repo.CriarContaContabil(It.IsAny<CriarContaContabilModel>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Process_DeveSetarErro_QuandoLancamentoLancaExcecao()
     {
         // Arrange

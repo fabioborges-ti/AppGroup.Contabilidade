@@ -1,4 +1,5 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
+using AppGroup.Contabilidade.Application.Exceptions;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -23,8 +24,6 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
     {
         _logger.LogInformation("Iniciando a validação de conta-pai.");
 
-        if (request.HasError) return;
-
         try
         {
             var codigoConta = request.Codigo;
@@ -38,7 +37,7 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
                 1 => codigoConta,
                 2 => partes[0],
                 3 => $"{partes[0]}.{partes[1]}",
-                _ => throw new Exception("Formato inválido.")
+                _ => throw new ContaContabilValidationException("Formato inválido.")
             };
 
             if (nivel > 1)
@@ -46,15 +45,15 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
                 var existeContaPai = await _repository.ExisteCodigo(contaPai);
 
                 if (!existeContaPai)
-                    throw new Exception("Conta-pai não localizada");
+                    throw new ContaContabilValidationException("Conta-pai não localizada");
 
                 var dadosContaPai = await _repository.PesquisarContaPorCodigo(contaPai);
 
                 if (dadosContaPai.Tipo != request.Tipo)
-                    throw new Exception("Tipo da conta deve ser igual ao da Conta-pai");
+                    throw new ContaContabilValidationException("Tipo da conta deve ser igual ao da Conta-pai");
 
                 if (dadosContaPai.AceitaLancamentos)
-                    throw new Exception("Conta-pai informada não aceita cadastro de contas-filhas");
+                    throw new ContaContabilValidationException("Conta-pai informada não aceita cadastro de contas-filhas");
             }
         }
         catch (Exception ex)
@@ -63,9 +62,11 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
             request.ErrorMessage = ex.Message;
 
             _logger.LogError(ex, "Erro ao validar a conta-pai: {Codigo}", request.Codigo);
+
+            return;
         }
 
         if (_successor is not null)
-            await _successor!.Process(request);
+            await _successor.Process(request);
     }
 }

@@ -38,7 +38,7 @@ public class ChecaDadosContaHandlerTests
         Assert.True(request.HasError);
         Assert.Equal("Conta contábil não encontrada", request.ErrorMessage);
 
-        _successorMock.Verify(s => s.Process(request), Times.Once);
+        _successorMock.Verify(s => s.Process(request), Times.Never);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class ChecaDadosContaHandlerTests
         Assert.True(request.HasError);
         Assert.Equal("Não é possível excluir uma conta que possui contas filhas associadas", request.ErrorMessage);
 
-        _successorMock.Verify(s => s.Process(request), Times.Once);
+        _successorMock.Verify(s => s.Process(request), Times.Never);
     }
 
     [Fact]
@@ -115,6 +115,6 @@ public class ChecaDadosContaHandlerTests
         Assert.True(request.HasError);
         Assert.Equal(exceptionMessage, request.ErrorMessage);
 
-        _successorMock.Verify(s => s.Process(request), Times.Once);
+        _successorMock.Verify(s => s.Process(request), Times.Never);
     }
 }

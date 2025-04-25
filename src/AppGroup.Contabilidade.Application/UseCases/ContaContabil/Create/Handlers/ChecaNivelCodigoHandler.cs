@@ -1,4 +1,5 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
+using AppGroup.Contabilidade.Application.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create.Handlers;
@@ -16,17 +17,17 @@ public class ChecaNivelCodigoHandler : Handler<CriarContaContabilRequest>
 
     public override async Task Process(CriarContaContabilRequest request)
     {
-        if (request.HasError) return;
+        _logger.LogInformation("Iniciando a validação de nível do código.");
 
         try
         {
             if (request.IdPai is null || request.IdPai == Guid.Empty)
             {
                 if (request.Codigo.Contains('.'))
-                    throw new Exception("Para cadastro de Conta-pai não deve informar sub-niveis.");
+                    throw new ContaContabilValidationException("Para cadastro de Conta-pai não deve informar sub-niveis.");
 
                 if (request.AceitaLancamentos)
-                    throw new Exception("Conta-pai não deve aceitar lançamentos.");
+                    throw new ContaContabilValidationException("Conta-pai não deve aceitar lançamentos.");
 
                 request.Nivel = 1;
             }
@@ -39,9 +40,13 @@ public class ChecaNivelCodigoHandler : Handler<CriarContaContabilRequest>
         {
             request.HasError = true;
             request.ErrorMessage = ex.Message;
+
+            _logger.LogError(ex, "Erro ao validar o nível do código: {Codigo}", request.Codigo);
+
+            return;
         }
 
-        if (_successor is not null)
-            await _successor!.Process(request);
+        if (_successor != null)
+            await _successor.Process(request);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
+using AppGroup.Contabilidade.Application.Exceptions;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -24,22 +25,29 @@ public class ChecaExistenciaCodigoHandler : Handler<CriarContaContabilRequest>
 
         try
         {
-            var codigoConta = request.Codigo;
+            if (await _repository.ExisteCodigo(request.Codigo))
+            {
+                request.HasError = true;
+                request.ErrorMessage = "Código já cadastrado";
 
-            var existeCodigo = await _repository.ExisteCodigo(codigoConta);
+                _logger.LogWarning("Código de conta contábil já existente: {Codigo}", request.Codigo);
 
-            if (existeCodigo)
-                throw new Exception("Código já cadastrado");
+                return;
+            }
+
+            _logger.LogInformation("Validação de existência de código concluída com sucesso");
+
+            if (_successor != null)
+                await _successor.Process(request);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not ContaContabilValidationException)
         {
             request.HasError = true;
-            request.ErrorMessage = ex.Message;
+            request.ErrorMessage = "Erro ao validar a existência do código";
 
-            _logger.LogError(ex, "Erro ao validar a existência do código.");
+            _logger.LogError(ex, "Erro ao validar a existência do código para conta: {Codigo}", request.Codigo);
+
+            return;
         }
-
-        if (_successor is not null)
-            await _successor!.Process(request);
     }
 }

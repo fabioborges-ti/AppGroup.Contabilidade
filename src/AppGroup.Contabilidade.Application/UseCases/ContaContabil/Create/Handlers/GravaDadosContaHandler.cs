@@ -25,8 +25,6 @@ public class GravaDadosContaHandler : Handler<CriarContaContabilRequest>
     {
         _logger.LogInformation("Iniciando a gravação de dados da conta contábil.");
 
-        if (request.HasError) return;
-
         try
         {
             var conta = new CriarContaContabilModel
@@ -41,6 +39,9 @@ public class GravaDadosContaHandler : Handler<CriarContaContabilRequest>
             };
 
             await _repository.CriarContaContabil(conta);
+
+            if (_successor != null)
+                await _successor.Process(request);
         }
         catch (Exception ex)
         {
@@ -48,9 +49,8 @@ public class GravaDadosContaHandler : Handler<CriarContaContabilRequest>
             request.ErrorMessage = ex.Message;
 
             _logger.LogError(ex, "Erro ao gravar os dados da conta contábil: {Codigo}", request.Codigo);
-        }
 
-        if (_successor is not null)
-            await _successor!.Process(request);
+            return;
+        }
     }
 }

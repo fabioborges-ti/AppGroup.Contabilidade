@@ -1,5 +1,7 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
+using AppGroup.Contabilidade.Application.Exceptions;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Update.Handlers;
 
@@ -7,14 +9,20 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
 {
     private readonly IContaContabilRepository _repository;
 
+    private readonly ILogger _logger;
+
     public ChecaConsistenciaCodigoHandler(IContaContabilRepository repository)
     {
         _repository = repository;
+
+        _logger = LoggerFactory
+                    .Create(builder => builder.AddConsole())
+                    .CreateLogger<ChecaConsistenciaCodigoHandler>();
     }
 
     public override async Task Process(EditarContaContabilRequest request)
     {
-        if (request.HasError) return;
+        _logger.LogInformation("Iniciando a validação de consistência do código.");
 
         try
         {
@@ -25,17 +33,18 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             else if (request.Nivel == 3)
             {
                 if (!request.AceitaLancamentos)
-                    throw new ArgumentException("Tipo não pode ser alterado, porque tem registros filhos cadastrados");
+                    throw new ContaContabilValidationException("Tipo não pode ser alterado, porque tem registros filhos cadastrados");
             }
         }
         catch (Exception ex)
         {
             request.HasError = true;
             request.ErrorMessage = ex.Message;
-        }
 
-        if (_successor is not null)
-            await _successor!.Process(request);
+            _logger.LogError(ex, "Erro ao validar a consistência do código: {Codigo}", request.Codigo);
+
+            return;
+        }
     }
 
     private async Task VerificarNivel1e2(EditarContaContabilRequest request)
@@ -44,7 +53,7 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
         var filhos = await _repository.PesquisarFilhosPorId(conta.Id);
 
         if (filhos.Count > 0 && conta.Tipo != request.Tipo)
-            throw new ArgumentException("Tipo não pode ser alterado, porque há registros filhos cadastrados na base");
+            throw new ContaContabilValidationException("Tipo não pode ser alterado, porque há registros filhos cadastrados na base");
 
         if (request.Nivel == 2)
         {
@@ -52,10 +61,10 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             var contaPai = await _repository.PesquisarContaPorCodigo(codigoPai);
 
             if (request.Tipo != contaPai.Tipo)
-                throw new ArgumentException("Tipo não pode ser alterado porque está diferente da Conta-pai");
+                throw new Exception("Tipo não pode ser alterado porque está diferente da Conta-pai");
         }
 
-        if (_successor is not null)
-            await _successor!.Process(request);
+        if (_successor != null)
+            await _successor.Process(request);
     }
 }

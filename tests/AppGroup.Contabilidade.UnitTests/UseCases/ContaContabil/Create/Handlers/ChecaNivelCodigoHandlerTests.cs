@@ -48,7 +48,8 @@ public class ChecaNivelCodigoHandlerTests
 
         Assert.True(request.HasError);
         Assert.Equal("Para cadastro de Conta-pai não deve informar sub-niveis.", request.ErrorMessage);
-        _successorMock.Verify(s => s.Process(request), Times.Once);
+
+        _successorMock.Verify(s => s.Process(request), Times.Never);
     }
 
     [Fact]
@@ -65,7 +66,8 @@ public class ChecaNivelCodigoHandlerTests
 
         Assert.True(request.HasError);
         Assert.Equal("Conta-pai não deve aceitar lançamentos.", request.ErrorMessage);
-        _successorMock.Verify(s => s.Process(request), Times.Once);
+
+        _successorMock.Verify(s => s.Process(request), Times.Never);
     }
 
     [Theory]

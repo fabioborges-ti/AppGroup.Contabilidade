@@ -1,5 +1,5 @@
 services:
-  appgroup.contabilidade.webapi:
+  api:
     image: ${DOCKER_REGISTRY-}appgroupcontabilidadewebapi
     build:
       context: .

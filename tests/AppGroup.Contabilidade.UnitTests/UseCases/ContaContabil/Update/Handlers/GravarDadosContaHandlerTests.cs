@@ -51,22 +51,6 @@ public class GravarDadosContaHandlerTests
     }
 
     [Fact]
-    public async Task NaoDeveGravar_SeJaTemErro()
-    {
-        // Arrange
-        var request = new EditarContaContabilRequest
-        {
-            HasError = true
-        };
-
-        // Act
-        await _handler.Process(request);
-
-        // Assert
-        _repositoryMock.Verify(r => r.EditarContaContabil(It.IsAny<EditarContaContabilModel>()), Times.Never);
-    }
-
-    [Fact]
     public async Task DeveSetarErro_SeLancarExcecao()
     {
         // Arrange
