@@ -11,7 +11,7 @@ public class EditarContaContabilRequest : RequestBaseDto, IRequest<EditarContaCo
     public string Codigo { get; set; } = string.Empty;
     public string Nome { get; set; } = string.Empty;
     public TipoConta Tipo { get; set; }
-    public bool AceitaLancementos { get; set; }
+    public bool AceitaLancamentos { get; set; }
 
     [JsonIgnore]
     public int Nivel { get; set; }

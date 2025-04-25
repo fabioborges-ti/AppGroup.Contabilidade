@@ -1,38 +1,48 @@
-﻿using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
+﻿using AppGroup.Contabilidade.Application.Common.Exceptions;
+using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Delete;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Generator;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Get;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.GetById;
 using AppGroup.Contabilidade.Application.UseCases.ContaContabil.Update;
-using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppGroup.Contabilidade.WebApi.Controllers.V1;
 
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
-public class ContaContabilController : ApiControllerBase
+[Route("api/v1/[controller]")]
+public class ContaContabilController : ControllerBase
 {
+    private readonly IMediator _mediator;
+
+    public ContaContabilController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpPost]
     public async Task<ActionResult<CriarContaContabilResponse>> Post([FromBody] CriarContaContabilRequest request)
     {
-        var result = await Mediator.Send(request);
+        try
+        {
+            var result = await _mediator.Send(request);
 
-        return request.HasError
-                ? BadRequest(result.Data)
-                : CreatedAtAction(nameof(Post), result.Data);
+            return CreatedAtAction(nameof(Post), result.Data);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors);
+        }
     }
 
     [HttpGet("GerarSugestaoConta")]
-    public async Task<ActionResult<CriarSugestaoResponse>> GetByPlateNumber([FromQuery] Guid? idPai = null)
+    public async Task<ActionResult<CriarSugestaoResponse>> GerarSugestaoConta([FromQuery] Guid? idPai = null)
     {
         var request = new CriarSugestaoRequest { IdPai = idPai };
 
-        var result = await Mediator.Send(request);
+        var result = await _mediator.Send(request);
 
-        return request.HasError
-                ? BadRequest(result.Data)
-                : Ok(result.Data);
+        return Ok(result.Data);
     }
 
     [HttpGet]
@@ -40,7 +50,7 @@ public class ContaContabilController : ApiControllerBase
     {
         var request = new ListarContaContabilRequest();
 
-        var result = await Mediator.Send(request);
+        var result = await _mediator.Send(request);
 
         return request.HasError
                 ? BadRequest(result.Data)
@@ -52,7 +62,7 @@ public class ContaContabilController : ApiControllerBase
     {
         var request = new ListarPorIdContaContabilRequest { IdConta = idConta };
 
-        var result = await Mediator.Send(request);
+        var result = await _mediator.Send(request);
 
         return request.HasError
                 ? BadRequest(result.Data)
@@ -62,17 +72,22 @@ public class ContaContabilController : ApiControllerBase
     [HttpPut]
     public async Task<ActionResult<EditarContaContabilResponse>> Editar([FromBody] EditarContaContabilRequest request)
     {
-        var result = await Mediator.Send(request);
+        try
+        {
+            var result = await _mediator.Send(request);
 
-        return request.HasError
-                ? BadRequest(result.Data)
-                : Ok(result.Data);
+            return Ok(result.Data);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors);
+        }
     }
 
     [HttpDelete]
     public async Task<ActionResult<DeletarContaContabilResponse>> Delete([FromBody] DeletarContaContabilRequest request)
     {
-        var result = await Mediator.Send(request);
+        var result = await _mediator.Send(request);
 
         return request.HasError
                 ? BadRequest(result.Data)

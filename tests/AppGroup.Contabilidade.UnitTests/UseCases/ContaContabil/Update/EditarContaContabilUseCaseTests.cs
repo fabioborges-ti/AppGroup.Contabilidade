@@ -27,7 +27,7 @@ public class EditarContaContabilUseCaseTests
             Codigo = "1.01",
             Nome = "Conta Teste",
             Tipo = TipoConta.Receitas,
-            AceitaLancementos = true
+            AceitaLancamentos = true
         };
 
         _repositoryMock
@@ -65,7 +65,7 @@ public class EditarContaContabilUseCaseTests
             Codigo = "1.01",
             Nome = "Conta Teste",
             Tipo = TipoConta.Receitas,
-            AceitaLancementos = true
+            AceitaLancamentos = true
         };
 
         _repositoryMock

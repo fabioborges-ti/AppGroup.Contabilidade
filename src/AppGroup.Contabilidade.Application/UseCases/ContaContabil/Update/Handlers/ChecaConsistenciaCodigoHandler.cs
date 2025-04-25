@@ -24,7 +24,7 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             }
             else if (request.Nivel == 3)
             {
-                if (!request.AceitaLancementos)
+                if (!request.AceitaLancamentos)
                     throw new ArgumentException("Tipo não pode ser alterado, porque tem registros filhos cadastrados");
             }
         }

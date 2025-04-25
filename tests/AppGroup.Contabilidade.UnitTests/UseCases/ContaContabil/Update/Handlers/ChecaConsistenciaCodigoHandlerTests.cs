@@ -90,7 +90,7 @@ public class ChecaConsistenciaCodigoHandlerTests
         var request = new EditarContaContabilRequest
         {
             Nivel = 3,
-            AceitaLancementos = false
+            AceitaLancamentos = false
         };
 
         // Act

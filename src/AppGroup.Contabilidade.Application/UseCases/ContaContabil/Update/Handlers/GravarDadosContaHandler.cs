@@ -25,7 +25,7 @@ public class GravarDadosContaHandler : Handler<EditarContaContabilRequest>
                 Codigo = request.Codigo,
                 Nome = request.Nome,
                 Tipo = (int)request.Tipo,
-                AceitaLancamentos = request.AceitaLancementos ? 1 : 0
+                AceitaLancamentos = request.AceitaLancamentos ? 1 : 0
             };
 
             await _repository.EditarContaContabil(conta);
