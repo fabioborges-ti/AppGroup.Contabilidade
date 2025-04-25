@@ -78,6 +78,7 @@ Atente para os seguintes containers:
 
 - **.NET 8.0**
 - **MediatR**
+- **FluentValidation**
 - **Dapper**
 - **Entity Framework** (somente para migrations)
 - **SQL Server**
