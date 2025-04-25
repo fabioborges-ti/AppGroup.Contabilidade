@@ -76,19 +76,19 @@ Atente para os seguintes containers:
 
 ### 🛠 Tecnologias Utilizadas
 
-- **.NET 8.0**
-- **MediatR**
-- **Dapper**
-- **Entity Framework** (somente para migrations)
-- **SQL Server**
-- **Clean Architecture** e **Clean Code**
-- **Design Pattern** (Chain of Responsability)
-- **HealthChecks**
-- **Serilog**
-- **ElasticSearch**
-- **Kibana**
-- **Versionamento de APIs**
-- **xUnit** (para testes unitários)
+- **Clean Architecture** e **Clean Code** - Princípios arquiteturais e práticas de codificação fundamentais
+- **Design Pattern** (Chain of Responsibility) - Padrões de projeto que implementam boas práticas
+- **.NET 8.0** - Plataforma de desenvolvimento
+- **SQL Server** - Sistema de banco de dados
+- **Dapper** e **Entity Framework** - Ferramentas de acesso a dados
+- **MediatR** - Implementação do padrão Mediator para mensagens
+- **FluentValidation** - Biblioteca para validação
+- **Versionamento de APIs** - Estratégia para manutenção de APIs
+- **HealthChecks** - Recurso para monitoramento de saúde da aplicação
+- **Serilog** - Biblioteca de logging
+- **ElasticSearch** - Ferramenta para indexação e busca de logs
+- **Kibana** - Interface para visualização dos dados do ElasticSearch
+- **xUnit** - Framework para testes unitários
 
 ### 🔗 Padrão Chain of Responsibility
 
