@@ -33,7 +33,7 @@ public class ChecaConsistenciaCodigoHandler : Handler<EditarContaContabilRequest
             else if (request.Nivel == 3)
             {
                 if (!request.AceitaLancamentos)
-                    throw new ContaContabilValidationException("Tipo não pode ser alterado, porque tem registros filhos cadastrados");
+                    throw new ContaContabilValidationException("Este nível de conta-contábil deve receber lançamentos");
             }
         }
         catch (Exception ex)

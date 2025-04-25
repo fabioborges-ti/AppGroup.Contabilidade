@@ -98,6 +98,6 @@ public class ChecaConsistenciaCodigoHandlerTests
 
         // Assert
         Assert.True(request.HasError);
-        Assert.Equal("Tipo não pode ser alterado, porque tem registros filhos cadastrados", request.ErrorMessage);
+        Assert.Equal("Este nível de conta-contábil deve receber lançamentos", request.ErrorMessage);
     }
 }

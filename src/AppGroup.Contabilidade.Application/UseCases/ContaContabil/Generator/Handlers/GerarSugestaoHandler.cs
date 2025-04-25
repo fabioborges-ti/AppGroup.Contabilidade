@@ -65,23 +65,20 @@ public class GerarSugestaoHandler : Handler<CriarSugestaoRequest>
             var codigo = item.Item1;
             var aceitaLancamento = item.Item2;
 
-            if (aceitaLancamento)
+            var partes = codigo.Split(".");
+            nivel = partes.Length;
+
+            switch (nivel)
             {
-                var partes = codigo.Split(".");
-                nivel = partes.Length;
+                case 2:
+                    if (int.TryParse(partes[1], out int nivel2))
+                        listaFilhos.Add(nivel2);
+                    break;
 
-                switch (nivel)
-                {
-                    case 2:
-                        if (int.TryParse(partes[1], out int nivel2))
-                            listaFilhos.Add(nivel2);
-                        break;
-
-                    case 3:
-                        if (int.TryParse(partes[2], out int nivel3))
-                            listaFilhos.Add(nivel3);
-                        break;
-                }
+                case 3:
+                    if (int.TryParse(partes[2], out int nivel3))
+                        listaFilhos.Add(nivel3);
+                    break;
             }
         }
 

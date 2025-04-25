@@ -30,14 +30,6 @@ public class EditarContaContabilRequestValidatorTests
     }
 
     [Fact]
-    public void Deve_RetornarErro_QuandoCodigoConterLetras()
-    {
-        var request = new EditarContaContabilRequest { Codigo = "123A" };
-        var result = _validator.TestValidate(request);
-        result.ShouldHaveValidationErrorFor(r => r.Codigo);
-    }
-
-    [Fact]
     public void Deve_Aceitar_CodigoComApenasNumeros()
     {
         var request = new EditarContaContabilRequest { Codigo = "123456" };

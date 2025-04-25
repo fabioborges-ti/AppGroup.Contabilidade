@@ -10,8 +10,7 @@ public class EditarContaContabilRequestValidator : AbstractValidator<EditarConta
             .Must(id => id != Guid.Empty).WithMessage("O ID da conta contábil não pode ser um GUID vazio.");
 
         RuleFor(c => c.Codigo)
-            .NotEmpty().WithMessage("O código da conta contábil deve ser informado.")
-            .Matches("^[0-9]+$").WithMessage("O código da conta contábil deve conter apenas números.");
+            .NotEmpty().WithMessage("O código da conta contábil deve ser informado.");
 
         RuleFor(c => c.Nome)
             .NotEmpty().WithMessage("O nome da conta contábil deve ser informado.");

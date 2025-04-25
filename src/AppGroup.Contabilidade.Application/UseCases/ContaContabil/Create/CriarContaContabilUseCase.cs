@@ -22,12 +22,14 @@ public class CriarContaContabilUseCase : IRequestHandler<CriarContaContabilReque
 
         var h1 = new ChecaExistenciaCodigoHandler(_repository);
         var h2 = new ChecaNivelCodigoHandler();
-        var h3 = new ChecaContaPaiHandler(_repository);
-        var h4 = new GravaDadosContaHandler(_repository);
+        var h3 = new ChecaConsistenciaNivelHandler();
+        var h4 = new ChecaContaPaiHandler(_repository);
+        var h5 = new GravaDadosContaHandler(_repository);
 
         h1.SetSuccessor(h2);
         h2.SetSuccessor(h3);
         h3.SetSuccessor(h4);
+        h4.SetSuccessor(h5);
 
         await h1.Process(request);
 

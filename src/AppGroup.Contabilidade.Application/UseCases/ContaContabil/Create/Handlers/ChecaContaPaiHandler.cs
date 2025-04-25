@@ -55,6 +55,9 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
                 if (dadosContaPai.AceitaLancamentos)
                     throw new ContaContabilValidationException("Conta-pai informada não aceita cadastro de contas-filhas");
             }
+
+            if (_successor != null)
+                await _successor.Process(request);
         }
         catch (Exception ex)
         {
@@ -65,8 +68,5 @@ public class ChecaContaPaiHandler : Handler<CriarContaContabilRequest>
 
             return;
         }
-
-        if (_successor is not null)
-            await _successor.Process(request);
     }
 }
