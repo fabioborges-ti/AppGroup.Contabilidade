@@ -8,16 +8,18 @@ namespace AppGroup.Contabilidade.Infrastructure.Database.Data.Repositories;
 
 public class ContaContabilRepository : BaseRepository, IContaContabilRepository
 {
-    public ContaContabilRepository(IConfiguration configuration) : base(configuration) { }
+    public ContaContabilRepository(IConfiguration configuration) : base(configuration)
+    {
+    }
 
     public async Task<int> GerarCodigoPai()
     {
         await OpenConnectionAsync();
 
         const string query = @"
-            SELECT TOP 1 (c.Codigo + 1) AS sugestao 
-            FROM ContasContabeis c 
-            WHERE c.IdPai IS NULL 
+            SELECT TOP 1 (c.Codigo + 1) AS sugestao
+            FROM ContasContabeis c
+            WHERE c.IdPai IS NULL
             ORDER BY c.Codigo DESC";
 
         var result = await Connection.QueryFirstOrDefaultAsync<int?>(query);
@@ -45,9 +47,9 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
         await OpenConnectionAsync();
 
         const string query = @"
-            SELECT Codigo, AceitaLancamentos 
-            FROM ContasContabeis 
-            WHERE IdPai = @IdPai 
+            SELECT Codigo, AceitaLancamentos
+            FROM ContasContabeis
+            WHERE IdPai = @IdPai
             ORDER BY Codigo DESC";
 
         var result = await Connection.QueryAsync<(string, bool)>(query, new { IdPai = idContaPai });
@@ -75,8 +77,8 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
         await OpenConnectionAsync();
 
         const string query = @"
-            SELECT Id, Codigo, Nome, Tipo, AceitaLancamentos 
-            FROM ContasContabeis 
+            SELECT Id, Codigo, Nome, Tipo, AceitaLancamentos
+            FROM ContasContabeis
             WHERE Id = @Id";
 
         var result = await Connection.QueryFirstOrDefaultAsync<ContaContabilModel>(query, new { Id = idConta });
@@ -91,7 +93,7 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
         await OpenConnectionAsync();
 
         const string query = @"
-            INSERT INTO ContasContabeis (Id, Codigo, Nome, Tipo, AceitaLancamentos, IdPai) 
+            INSERT INTO ContasContabeis (Id, Codigo, Nome, Tipo, AceitaLancamentos, IdPai)
             VALUES (NEWID(), @Codigo, @Nome, @Tipo, @AceitaLancamentos, @IdPai)";
 
         await Connection.ExecuteAsync(query, model);
@@ -117,8 +119,8 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
         await OpenConnectionAsync();
 
         const string query = @"
-            UPDATE ContasContabeis 
-            SET Nome = @Nome, Tipo = @Tipo, AceitaLancamentos = @AceitaLancamentos 
+            UPDATE ContasContabeis
+            SET Nome = @Nome, Tipo = @Tipo, AceitaLancamentos = @AceitaLancamentos
             WHERE Id = @Id";
 
         await Connection.ExecuteAsync(query, model);
@@ -141,15 +143,15 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
     {
         await OpenConnectionAsync();
 
-        var query = @$"WITH Hierarquia AS 
+        var query = @$"WITH Hierarquia AS
                     (
                      -- Primeiro nível (raiz)
                         SELECT Id, Codigo, Nome, Tipo, AceitaLancamentos, CAST(Codigo AS VARCHAR(MAX)) AS Caminho
-                          FROM ContasContabeis 
+                          FROM ContasContabeis
 	                     WHERE IdPai IS NULL
-                    
+
                          UNION ALL
-    
+
                      -- Níveis seguintes
                         SELECT f.Id, f.Codigo, f.Nome, f.Tipo, f.AceitaLancamentos, CAST(h.Caminho + '.' + f.Codigo AS VARCHAR(MAX))
                           FROM ContasContabeis f INNER JOIN Hierarquia h ON f.IdPai = h.Id

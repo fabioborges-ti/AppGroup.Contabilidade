@@ -91,6 +91,7 @@ public static class EnumOperations
     {
         return Convert.ToInt32(@enum);
     }
+
     /// <summary>
     /// Converte uma string em um enum
     /// </summary>

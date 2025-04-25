@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
+    <PreserveCompilationContext>true</PreserveCompilationContext>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -14,6 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.15" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="xunit" Version="2.8.0" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AppGroup.Contabilidade.Application\AppGroup.Contabilidade.Application.csproj" />
     <ProjectReference Include="..\..\src\AppGroup.Contabilidade.Domain\AppGroup.Contabilidade.Domain.csproj" />
+    <ProjectReference Include="..\..\src\AppGroup.Contabilidade.Infrastructure.Database\AppGroup.Contabilidade.Infrastructure.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>

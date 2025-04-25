@@ -4,5 +4,4 @@ namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Create;
 
 public class CriarContaContabilResponse : ResponseBaseDto
 {
-
 }

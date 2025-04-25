@@ -4,5 +4,4 @@ namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Delete;
 
 public class DeletarContaContabilResponse : ResponseBaseDto
 {
-
 }

@@ -4,5 +4,4 @@ namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.GetById;
 
 public class ListarPorIdContaContabilResponse : ResponseBaseDto
 {
-
 }

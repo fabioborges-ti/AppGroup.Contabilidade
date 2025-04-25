@@ -11,7 +11,7 @@ public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     private readonly IApiVersionDescriptionProvider provider;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="provider"></param>
     public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
@@ -20,7 +20,7 @@ public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="options"></param>
     public void Configure(SwaggerGenOptions options)
@@ -33,7 +33,7 @@ public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="name"></param>
     /// <param name="options"></param>

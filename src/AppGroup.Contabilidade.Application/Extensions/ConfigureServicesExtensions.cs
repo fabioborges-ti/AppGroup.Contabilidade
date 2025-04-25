@@ -22,4 +22,3 @@ public static class ConfigureServicesExtensions
         return services;
     }
 }
-

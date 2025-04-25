@@ -4,5 +4,4 @@ namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Update;
 
 public class EditarContaContabilResponse : ResponseBaseDto
 {
-
 }

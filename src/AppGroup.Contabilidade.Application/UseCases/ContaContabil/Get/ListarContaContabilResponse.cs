@@ -4,5 +4,4 @@ namespace AppGroup.Contabilidade.Application.UseCases.ContaContabil.Get;
 
 public class ListarContaContabilResponse : ResponseBaseDto
 {
-
 }
