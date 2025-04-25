@@ -76,8 +76,6 @@ Atente para os seguintes containers:
 
 ### 🛠 Tecnologias Utilizadas
 
-## Tecnologias e Conceitos por Ordem de Grandeza
-
 - **Clean Architecture** e **Clean Code** - Princípios arquiteturais e práticas de codificação fundamentais
 - **Design Pattern** (Chain of Responsibility) - Padrões de projeto que implementam boas práticas
 - **.NET 8.0** - Plataforma de desenvolvimento
