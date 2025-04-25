@@ -90,7 +90,7 @@ Atente para os seguintes containers:
 - **Serilog** - Biblioteca de logging
 - **ElasticSearch** - Ferramenta para indexação e busca de logs
 - **Kibana** - Interface para visualização dos dados do ElasticSearch
-- **xUnit** - Framework para testes unitáriosTentar novamenteClaude ainda não tem a capacidade de executar o código que gera.O Claude pode cometer erros. Confira sempre as respostas. 
+- **xUnit** - Framework para testes unitários
 
 ### 🔗 Padrão Chain of Responsibility
 
