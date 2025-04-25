@@ -7,7 +7,7 @@ Este repositório implementa o fluxo de **criação de contas contábeis** utili
 
 - [Visão Geral](#visão-geral)
 - [Etapas de instalação](#etapas-de-instalação)
-- [Tecnologias](#-tecnologias-utilizadas)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [Padrão Chain of Responsibility](#-padrão-chain-of-responsibility)
 - [Fluxos Principais](#-fluxos-principais)
   - [Criação de Conta Contábil](#-fluxo-de-criação-de-conta-contábil)
