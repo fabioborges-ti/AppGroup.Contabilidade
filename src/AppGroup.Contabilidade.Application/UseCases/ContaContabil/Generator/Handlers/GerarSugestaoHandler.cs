@@ -84,14 +84,10 @@ public class GerarSugestaoHandler : Handler<CriarSugestaoRequest>
 
         var proximo = listaFilhos.Count != 0 ? listaFilhos.Max() + 1 : 1;
 
-        if (nivel == 2)
-        {
-            return $"{codigoPai}.{proximo}";
-        }
-
-        if (nivel == 3 && proximo == 1000)
+        if (nivel > 1 && proximo == 1000)
         {
             var novoPai = await EncontrarProximoCodigoPaiDisponivelAsync(codigoPai);
+
             return novoPai;
         }
 
@@ -100,22 +96,39 @@ public class GerarSugestaoHandler : Handler<CriarSugestaoRequest>
 
     private async Task<string> EncontrarProximoCodigoPaiDisponivelAsync(string codigoPai)
     {
-        var partes = codigoPai.Split(".");
-        var prefixo = partes[0];
-        var numeroAtual = int.Parse(partes[1]);
-
         int tentativa = 1;
 
-        while (true)
+        if (codigoPai.Contains('.'))
         {
-            var proximoCodigoPai = $"{prefixo}.{numeroAtual + tentativa}";
+            var partes = codigoPai.Split(".");
+            var prefixo = partes[0];
+            var numeroAtual = int.Parse(partes[1]);
 
-            var existe = await _repository.ExisteCodigo(proximoCodigoPai);
+            while (true)
+            {
+                var proximoCodigoPai = $"{prefixo}.{numeroAtual + tentativa}";
 
-            if (!existe)
-                return proximoCodigoPai;
+                var existe = await _repository.ExisteCodigo(proximoCodigoPai);
 
-            tentativa++;
+                if (!existe)
+                    return proximoCodigoPai;
+
+                tentativa++;
+            }
+        }
+        else
+        {
+            while (true)
+            {
+                var proximoCodigoPai = $"{int.Parse(codigoPai) + tentativa}";
+
+                var existe = await _repository.ExisteCodigo(proximoCodigoPai);
+
+                if (!existe)
+                    return proximoCodigoPai.ToString();
+
+                tentativa++;
+            }
         }
     }
 }
