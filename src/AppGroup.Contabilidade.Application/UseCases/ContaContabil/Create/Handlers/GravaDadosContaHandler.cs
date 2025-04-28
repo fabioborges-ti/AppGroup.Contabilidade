@@ -1,5 +1,4 @@
 ﻿using AppGroup.Contabilidade.Application.Common.Handlers;
-using AppGroup.Contabilidade.Domain.Enums;
 using AppGroup.Contabilidade.Domain.Interfaces.Repositories;
 using AppGroup.Contabilidade.Domain.Models.ContaContabil;
 using Microsoft.Extensions.Logging;
@@ -31,7 +30,7 @@ public class GravaDadosContaHandler : Handler<CriarContaContabilRequest>
             {
                 Codigo = request.Codigo,
                 Nome = request.Nome,
-                Tipo = (int)TipoConta.Receitas,
+                Tipo = (int)request.Tipo,
                 AceitaLancamentos = request.AceitaLancamentos ? 1 : 0,
                 IdPai = request.IdPai == Guid.Empty || request.IdPai == null
                             ? null
