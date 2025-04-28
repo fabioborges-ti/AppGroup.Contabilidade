@@ -143,21 +143,39 @@ public class ContaContabilRepository : BaseRepository, IContaContabilRepository
     {
         await OpenConnectionAsync();
 
-        var query = @$"WITH Hierarquia AS
-                    (
-                     -- Primeiro nível (raiz)
-                        SELECT Id, Codigo, Nome, Tipo, AceitaLancamentos, CAST(Codigo AS VARCHAR(MAX)) AS Caminho
-                          FROM ContasContabeis
-	                     WHERE IdPai IS NULL
+        var query = @$"WITH ContasHierarquia AS
+                        (
+                            SELECT 
+                                Id,
+                                Codigo,
+                                Nome,
+                                Tipo,
+                                AceitaLancamentos,
+                                IdPai,
+                                0 AS Nivel,
+                                CAST(Codigo AS VARCHAR(MAX)) AS CaminhoOrdenacao
+                            FROM
+                                ContasContabeis
+                            WHERE
+                                IdPai IS NULL -- Contas Pai
 
-                         UNION ALL
+                            UNION ALL
 
-                     -- Níveis seguintes
-                        SELECT f.Id, f.Codigo, f.Nome, f.Tipo, f.AceitaLancamentos, CAST(h.Caminho + '.' + f.Codigo AS VARCHAR(MAX))
-                          FROM ContasContabeis f INNER JOIN Hierarquia h ON f.IdPai = h.Id
-                    )
+                            SELECT
+                                cc.Id,
+                                cc.Codigo,
+                                cc.Nome,
+                                cc.Tipo,
+                                cc.AceitaLancamentos,
+                                cc.IdPai,
+                                ch.Nivel + 1,
+                                CAST(ch.CaminhoOrdenacao + '-' + cc.Codigo AS VARCHAR(MAX))
+                            FROM
+                                ContasContabeis cc
+                                INNER JOIN ContasHierarquia ch ON cc.IdPai = ch.Id
+                        )
 
-                    SELECT * FROM Hierarquia ORDER BY Caminho; ";
+                        SELECT Id, Codigo, Nome, Tipo, AceitaLancamentos, IdPai, Nivel FROM ContasHierarquia ORDER BY CaminhoOrdenacao; ";
 
         var data = await Connection.QueryAsync<ContaContabilModel>(query);
 
